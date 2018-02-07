@@ -1,22 +1,43 @@
 ---
 # tasks file for osp_create_instance
 
-- name: Create a new instance and attaches to a network and passes metadata to the instance
+- name: Create a new instance 
   os_server:
-       state: present
-       auth:
-         auth_url: https://region-b.geo-1.identity.hpcloudsvc.com:35357/v2.0/
-         username: admin
-         password: admin
-         project_name: admin
-       name: vm1
-       image: 4f905f38-e52a-43d2-b6ec-754a13ffb529
-       key_name: ansible_key
-       timeout: 200
-       flavor: 4
-       nics:
-         - net-id: 34605f38-e52a-25d2-b6ec-754a13ffb723
-         - net-name: another_network
-       meta:
-         hostname: test1
-         group: uge_master
+    cloud: "{{ cloud_name }}"
+    name: "{{ instance_name }}"
+    image: "{{ os_image }}"
+    meta: "group={{ group }},deployment_name={{ deployment }}"
+    flavor: "{{ flavor_name }}"
+    security_groups: "{{ group }}"
+    key_name: "{{ key }}"
+    wait: yes
+    nics:
+    - net-name: network2
+    userdata: | 
+      #!/bin/bash
+      curl -o /tmp/openstack.pub http://www.opentlc.com/download/ansible_bootcamp/openstack_keys/openstack.pub
+      cat /tmp/openstack.pub >> /home/cloud-user/.ssh/authorized_keys
+      curl -o /tmp/internal.repo http://www.opentlc.com/download/ansible_bootcamp/repo/internal.repo
+  register: instanceip
+
+- name: Add floating IP to "{{ instance_name }}"
+  os_floating_ip:
+    cloud: "{{ cloud_name }}"
+    state: present
+    reuse: yes
+    server: "{{ instance_name }}"
+    network: network1
+    wait: true
+    timeout: 180
+  register: instancefloatingip
+
+- name: Show "{{ instanceip }}" public IP
+  debug: var=instancefloatingip.floating_ip.floating_ip_address
+
+- name: Wait for "{{ instance_name }}" to be available
+  wait_for:
+    host: "{{ instancefloatingip.floating_ip.floating_ip_address }}"
+    port: 22
+    search_regex: OpenSSH
+    timeout: 600
+  delegate_to: "{{ inventory_hostname }}"

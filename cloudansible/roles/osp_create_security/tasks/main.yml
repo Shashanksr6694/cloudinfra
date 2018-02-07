@@ -1,13 +1,13 @@
 ---
 # tasks file for osp_create_security
 
-#creating security group
+# creating security group for app 
 
 - os_security_group:
     cloud: ospcloud
     state: present
     name: group1
-    description: ICMP and SSH enabled
+    description: ports_open
 
 
 # adding rules
@@ -22,9 +22,48 @@
   with_items:
       - { port: '8080', ip_prefix: '0.0.0.0/0' }
       - { port: '22', ip_prefix: '0.0.0.0/0' }
-      - { port: '80', ip_prefix: '0.0.0.0/0' }
-      - { port: '443', ip_prefix: '0.0.0.0/0' }
-      - { port: '5432', ip_prefix: '20.20.20.0/24' }
+
+
+# creating security for frontend
+        
+- os_security_group:
+    cloud: ospcloud
+    state: present
+    name: group2
+    description: ports_open
+
+- os_security_group_rule:
+    cloud: ospcloud
+    security_group: group2
+    protocol: tcp
+    port_range_min: "{{ item.port }}"
+    port_range_max: "{{ item.port }}" 
+    remote_ip_prefix: "{{ item.ip_prefix }}"
+  with_items:
+    - { port: '80', ip_prefix: '0.0.0.0/0' }
+    - { port: '443', ip_prefix: '0.0.0.0/0' }
+    - { port: '22', ip_prefix: '0.0.0.0/0' }
+
+
+
+# creating security group for database
+      
+- os_security_group:
+    cloud: ospcloud
+    state: present
+    name: group3
+    description: ports_open
+
+- os_security_group_rule:
+    cloud: ospcloud
+    security_group: group3
+    protocol: tcp
+    port_range_min: "{{ item.port }}"
+    port_range_max: "{{ item.port }}" 
+    remote_ip_prefix: "{{ item.ip_prefix }}"
+  with_items:
+    - { port: '5432', ip_prefix: '20.20.20.0/24' }
+    - { port: '22', ip_prefix: '0.0.0.0/0' }
 
 
 # adding icmp rules
