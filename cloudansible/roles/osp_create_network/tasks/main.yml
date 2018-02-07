@@ -12,7 +12,7 @@
 # external subnet
 - os_subnet:
     state: present
-    network_name: app_network
+    network_name: network1
     name: subnet1
     cidr: 10.10.10.0/24
     dns_nameservers:
@@ -21,7 +21,7 @@
 
 # for internal network 
 - os_network:
-    cloud: mycloud
+    cloud: ospcloud
     state: present
     name: network2
     external: false

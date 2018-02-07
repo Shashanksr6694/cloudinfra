@@ -1,10 +1,11 @@
 ---
 # vars file for osp_create_instance
 
-cloud_name: ospcloud
-flavor_name: m2.small
 deployment: dev
-os_image: rhel-guest
 net_int: network2
 net_ext: network1
-key: cloudinfra
+webserver_name: web1
+databaseserver_name: db1
+flavor_name: m1.small
+webserver_group: webservers
+database_group: databaseservers
