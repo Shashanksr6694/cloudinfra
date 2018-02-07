@@ -31,3 +31,9 @@
     include_role:
        name: osp_create_instance
        vars_from: db.yml
+
+
+# gather facts
+  - name: Gather facts
+    include_role: 
+       name: osp_gather_facts
