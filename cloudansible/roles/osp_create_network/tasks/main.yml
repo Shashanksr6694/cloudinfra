@@ -1,2 +1,52 @@
 ---
 # tasks file for osp_create_network
+
+# for external network
+- os_network:
+      cloud: ospcloud
+      state: present
+      name: network1
+      external: true
+  register: external
+
+# external subnet
+- os_subnet:
+    state: present
+    network_name: app_network
+    name: subnet1
+    cidr: 10.10.10.0/24
+    dns_nameservers:
+       - 8.8.8.7
+       - 8.8.8.8
+
+# for internal network 
+- os_network:
+    cloud: mycloud
+    state: present
+    name: network2
+    external: false
+  register: internal
+
+#internal subnet 
+- os_subnet:
+    cloud: ospcloud
+    state: present
+    network_name: network2
+    name: subnet2
+    cidr: 20.20.20.0/24
+    dns_nameservers:
+       - 8.8.8.7
+       - 8.8.8.8
+
+
+# adding router
+
+- os_router:
+    cloud: ospcloud
+    state: present
+    name: router1
+    network: network1
+    external_fixed_ips:
+      - subnet: subnet1
+    interfaces:
+      - subnet2
