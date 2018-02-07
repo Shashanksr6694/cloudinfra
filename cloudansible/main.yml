@@ -1,0 +1,6 @@
+---
+- hosts:
+  roles:
+    - {name: os_create_flavor}
+    - {name: os_create_network}
+    - {name: os_create_security}
