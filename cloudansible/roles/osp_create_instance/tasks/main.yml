@@ -8,7 +8,7 @@
     image: "{{ os_image }}"
     meta: "group={{ group }},deployment_name={{ deployment }}"
     flavor: "{{ flavor_name }}"
-    security_groups: "{{ group }}"
+    security_groups: "{{ group_name }}"
     key_name: "{{ key }}"
     wait: yes
     nics:

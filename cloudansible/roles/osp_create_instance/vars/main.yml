@@ -5,7 +5,6 @@ cloud_name: ospcloud
 flavor_name: m2.small
 deployment: dev
 os_image: rhel-guest
-group: group1
 net_int: network2
 net_ext: network1
 key: cloudinfra

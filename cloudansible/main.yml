@@ -1,6 +1,33 @@
----
-- hosts:
+- hosts: jumpbox
   roles:
-    - {name: os_create_flavor}
-    - {name: os_create_network}
-    - {name: os_create_security}
+     - osp_create_flavor
+     - osp_create_network
+     - osp_create_security
+  tasks:
+
+# creating fronted instance
+  - name: Create frontend instance
+    include_role:
+       name: osp_create_instance
+       vars_from: frontend.yml
+ 
+
+# creating app1 server
+  - name: Create app1 instance
+    include_role:
+       name: osp_create_instance
+       vars_from: app1.yml
+
+
+# creating app2 server
+  - name: Create app2 instance
+    include_role:
+       name: osp_create_instance
+       vars_from: app2.yml
+
+
+# creating database server
+  - name: Create db instance
+    include_role:
+       name: osp_create_instance
+       vars_from: db.yml
